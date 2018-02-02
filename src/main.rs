@@ -19,8 +19,6 @@ fn run() -> io::Result<()> {
             if toml_path.exists() {
                 let _ = check_repo(&path);
             }
-
-
         }
     }
     
