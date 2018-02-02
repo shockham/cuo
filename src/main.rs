@@ -17,7 +17,14 @@ fn run() -> io::Result<()> {
             toml_path.push("Cargo.toml");
 
             if toml_path.exists() {
-                let _ = check_repo(&path);
+                let mut main_path = PathBuf::new();
+                main_path.push(path.clone());
+                main_path.push("src");
+                main_path.push("main.rs");
+
+                if main_path.exists() {
+                    let _ = check_repo(&path);
+                }
             }
         }
     }
