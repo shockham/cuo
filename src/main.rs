@@ -1,7 +1,7 @@
 extern crate git2;
+extern crate cargo;
 
 use std::io;
-use std::io::{Error, ErrorKind};
 use std::fs;
 use std::path::{Path, PathBuf};
 
@@ -11,7 +11,7 @@ fn run() -> io::Result<()> {
     for entry in fs::read_dir("..")? {
         let entry = entry?;
         let path = entry.path();
-        if path.is_dir() {    
+        if path.is_dir() {
             let mut toml_path = PathBuf::from(path.clone());
             toml_path.push("Cargo.toml");
 
@@ -25,19 +25,16 @@ fn run() -> io::Result<()> {
             }
         }
     }
-    
+
     Ok(())
 }
 
-fn check_repo(path:&Path) -> io::Result<()> {
-    let repo = match Repository::open(path) {
-        Ok(repo) => repo,
-        Err(e) => return Err(Error::new(ErrorKind::Other, e.message())),
-    };
+fn check_repo(path:&Path) -> Result<(), git2::Error> {
+    let repo = Repository::open(path)?;
 
     println!("Checking: {:?}", repo.path());
 
-    if !repo.is_path_ignored("Cargo.lock").unwrap() {
+    if !repo.is_path_ignored("Cargo.lock")? {
         println!("Possible rust bin");
     }
 
