@@ -12,15 +12,12 @@ fn run() -> io::Result<()> {
         let entry = entry?;
         let path = entry.path();
         if path.is_dir() {    
-            let mut toml_path = PathBuf::new();
-            toml_path.push(path.clone());
+            let mut toml_path = PathBuf::from(path.clone());
             toml_path.push("Cargo.toml");
 
             if toml_path.exists() {
-                let mut main_path = PathBuf::new();
-                main_path.push(path.clone());
-                main_path.push("src");
-                main_path.push("main.rs");
+                let mut main_path = PathBuf::from(path.clone());
+                main_path.push("src/main.rs");
 
                 if main_path.exists() {
                     let _ = check_repo(&path);
