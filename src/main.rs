@@ -14,7 +14,8 @@ use cargo::util::{CliResult, Config};
 use cargo::util::important_paths::find_root_manifest_for_wd;
 
 fn run() -> io::Result<()> {
-    for entry in fs::read_dir(".")? {
+    let cwd = env::current_dir()?;
+    for entry in fs::read_dir(cwd)? {
         let entry = entry?;
         let path = entry.path();
         if path.is_dir() {
