@@ -14,7 +14,7 @@ use cargo::util::{CliResult, Config};
 use cargo::util::important_paths::find_root_manifest_for_wd;
 
 fn run() -> io::Result<()> {
-    for entry in fs::read_dir("..")? {
+    for entry in fs::read_dir(".")? {
         let entry = entry?;
         let path = entry.path();
         if path.is_dir() {
@@ -42,6 +42,7 @@ fn check_repo(path:&Path) -> Result<(), git2::Error> {
 
     if !repo.is_path_ignored("Cargo.lock")? {
         println!("Possible rust bin");
+        let _ = cargo_update(path);
     }
 
     Ok(())
