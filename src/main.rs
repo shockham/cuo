@@ -3,9 +3,15 @@ extern crate cargo;
 
 use std::io;
 use std::fs;
+use std::env;
 use std::path::{Path, PathBuf};
 
 use git2::Repository;
+
+use cargo::core::{Workspace, Shell};
+use cargo::ops;
+use cargo::util::{CliResult, Config};
+use cargo::util::important_paths::find_root_manifest_for_wd;
 
 fn run() -> io::Result<()> {
     for entry in fs::read_dir("..")? {
@@ -38,6 +44,29 @@ fn check_repo(path:&Path) -> Result<(), git2::Error> {
         println!("Possible rust bin");
     }
 
+    Ok(())
+}
+
+pub fn cargo_update(path: &Path) -> CliResult {
+    let mut config = Config::new(Shell::new(), path.into(), env::home_dir().unwrap());
+    config.configure(0,
+                     Some(true),
+                     &Some("auto".into()),
+                     true,
+                     true,
+                     &Vec::new())?;
+
+    let root = find_root_manifest_for_wd(None, path)?;
+
+    let update_opts = ops::UpdateOptions {
+        aggressive: false,
+        precise: None,
+        to_update: &Vec::new(),
+        config: &config,
+    };
+
+    let ws = Workspace::new(&root, &config)?;
+    ops::update_lockfile(&ws, &update_opts)?;
     Ok(())
 }
 
