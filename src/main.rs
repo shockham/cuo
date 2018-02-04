@@ -1,5 +1,5 @@
-extern crate git2;
 extern crate cargo;
+extern crate git2;
 
 use std::io;
 use std::fs;
@@ -8,7 +8,7 @@ use std::path::{Path, PathBuf};
 
 use git2::Repository;
 
-use cargo::core::{Workspace, Shell};
+use cargo::core::{Shell, Workspace};
 use cargo::ops;
 use cargo::util::{CliResult, Config};
 use cargo::util::important_paths::find_root_manifest_for_wd;
@@ -39,7 +39,7 @@ fn run() -> io::Result<()> {
     Ok(())
 }
 
-fn check_repo(path:&Path) -> Result<(), git2::Error> {
+fn check_repo(path: &Path) -> Result<(), git2::Error> {
     let repo = Repository::open(path)?;
 
     println!("Checking: {:?}", repo.path());
@@ -54,12 +54,7 @@ fn check_repo(path:&Path) -> Result<(), git2::Error> {
 
 pub fn cargo_update(path: &Path) -> CliResult {
     let mut config = Config::new(Shell::new(), path.into(), env::home_dir().unwrap());
-    config.configure(0,
-                     Some(true),
-                     &Some("auto".into()),
-                     true,
-                     true,
-                     &Vec::new())?;
+    config.configure(0, Some(true), &Some("auto".into()), true, true, &Vec::new())?;
 
     let root = find_root_manifest_for_wd(None, path)?;
 
