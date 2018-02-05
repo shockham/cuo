@@ -8,7 +8,7 @@ use std::path::{Path, PathBuf};
 
 use git2::Repository;
 
-use cargo::core::{Shell, Workspace};
+use cargo::core::Workspace;
 use cargo::ops;
 use cargo::util::{CliResult, Config};
 use cargo::util::important_paths::find_root_manifest_for_wd;
@@ -38,18 +38,19 @@ fn run() -> io::Result<()> {
 fn check_repo(path: &Path) -> Result<(), git2::Error> {
     let repo = Repository::open(path)?;
 
-    println!("Checking: {:?}", repo.path());
+    println!("==========\ncuo: Checking: {:?}", repo.path());
 
     if !repo.is_path_ignored("Cargo.lock")? {
-        println!("Possible rust bin");
+        println!("cuo: Updating rust bin project");
         let _ = cargo_update(path);
+        println!("cuo: Done!\n==========");
     }
 
     Ok(())
 }
 
 pub fn cargo_update(path: &Path) -> CliResult {
-    let mut config = Config::default()?;
+    let config = Config::default()?;
     let root = find_root_manifest_for_wd(None, path)?;
 
     let update_opts = ops::UpdateOptions {
