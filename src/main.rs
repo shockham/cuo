@@ -49,9 +49,7 @@ fn check_repo(path: &Path) -> Result<(), git2::Error> {
 }
 
 pub fn cargo_update(path: &Path) -> CliResult {
-    let mut config = Config::new(Shell::new(), path.into(), env::home_dir().unwrap());
-    config.configure(0, Some(true), &Some("auto".into()), true, true, &Vec::new())?;
-
+    let mut config = Config::default()?;
     let root = find_root_manifest_for_wd(None, path)?;
 
     let update_opts = ops::UpdateOptions {
