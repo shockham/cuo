@@ -16,28 +16,25 @@ use cargo::util::important_paths::find_root_manifest_for_wd;
 fn run() -> io::Result<()> {
     let cwd = env::current_dir()?;
 
-    // TODO: Clean up nesting
-    for entry in fs::read_dir(cwd)? {
-        let entry = entry?;
-        let path = entry.path();
-
-        if path.is_dir() {
-            let mut toml_path = PathBuf::from(path.clone());
+    fs::read_dir(cwd)?
+        .filter_map(|e| e.ok())
+        .filter(|e| e.path().is_dir())
+        .map(|de| de.path())
+        .filter(|path| {
+            let mut toml_path = PathBuf::from(path);
             toml_path.push("Cargo.toml");
-
-            if toml_path.exists() {
-                let mut main_path = PathBuf::from(path.clone());
-                main_path.push("src/main.rs");
-
-                if main_path.exists() {
-                    let _ = check_repo(&path);
-                }
-            }
-        }
-    }
+            toml_path.exists()
+        })
+        .filter(|path| {
+            let mut main_path = PathBuf::from(path);
+            main_path.push("src/main.rs");
+            main_path.exists()
+        })
+        .for_each(|path| check_repo(&path).unwrap());
 
     Ok(())
 }
+
 
 fn check_repo(path: &Path) -> Result<(), git2::Error> {
     let repo = Repository::open(path)?;
