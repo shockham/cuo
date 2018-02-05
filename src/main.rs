@@ -23,12 +23,11 @@ fn run() -> io::Result<()> {
         .filter(|path| {
             let mut toml_path = PathBuf::from(path);
             toml_path.push("Cargo.toml");
-            toml_path.exists()
-        })
-        .filter(|path| {
+
             let mut main_path = PathBuf::from(path);
             main_path.push("src/main.rs");
-            main_path.exists()
+
+            toml_path.exists() && main_path.exists()
         })
         .for_each(|path| check_repo(&path).unwrap());
 
