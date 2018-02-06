@@ -40,9 +40,18 @@ fn check_repo(path: &Path) -> Result<(), git2::Error> {
 
     println!("==========\ncuo: Checking: {:?}", repo.path());
 
+    if !repo.statuses(None)?.is_empty() {
+        return Err(git2::Error::from_str("Repo not clean"));
+    }
+
     if !repo.is_path_ignored("Cargo.lock")? {
         println!("cuo: Updating rust bin project");
         let _ = cargo_update(path);
+
+        if repo.statuses(None)?.iter().any(|s| s.status() == git2::STATUS_WT_MODIFIED) {
+            println!("Deps updated");
+        }
+
         println!("cuo: Done!\n==========");
     }
 
