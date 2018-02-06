@@ -50,6 +50,7 @@ fn check_repo(path: &Path) -> Result<(), git2::Error> {
 
         if repo.statuses(None)?.iter().any(|s| s.status() == git2::STATUS_WT_MODIFIED) {
             println!("Deps updated");
+            // TODO auto-commit updated repo
         }
 
         println!("cuo: Done!\n==========");
