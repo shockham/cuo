@@ -49,7 +49,7 @@ fn check_repo(path: &Path) -> Result<(), git2::Error> {
         let _ = cargo_update(path);
 
         if repo.statuses(None)?.iter().any(|s| s.status() == git2::STATUS_WT_MODIFIED) {
-            println!("Deps updated");
+            println!("cuo: Deps updated");
             // TODO auto-commit updated repo
         }
 
