@@ -65,14 +65,14 @@ fn check_repo(path: &Path) -> Result<(), git2::Error> {
 
             let current_head = repo.head()?.peel_to_commit()?;
 
-            let mut cbs = RemoteCallbacks::new();
-            let _ = cbs.credentials(|_,_,_| Cred::default());
+            let mut rcbs = RemoteCallbacks::new();
+            rcbs.credentials(|_,_,_| Cred::default());
             let mut push_ops = PushOptions::default();
-            let push_ops = push_ops.remote_callbacks(cbs);
+            push_ops.remote_callbacks(rcbs);
 
             // TODO better commit message describing what was updated
             repo.commit(Some("HEAD"), &sig, &sig, "Update deps", &tree, &[&current_head])?;
-            repo.find_remote("origin")?.push(&[], Some(push_ops))?;
+            repo.find_remote("origin")?.push(&[], Some(&mut push_ops))?;
         }
 
         println!("cuo: Done!\n==========");
