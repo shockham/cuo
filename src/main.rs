@@ -67,8 +67,7 @@ fn check_repo(path: &Path) -> Result<(), git2::Error> {
 
             // TODO better commit message describing what was updated
             repo.commit(Some("HEAD"), &sig, &sig, "Update deps", &tree, &[&current_head])?;
-
-            // TODO push commit to remote origin
+            repo.find_remote("origin")?.push(&[], None)?;
         }
 
         println!("cuo: Done!\n==========");
