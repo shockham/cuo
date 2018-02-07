@@ -6,7 +6,7 @@ use std::fs;
 use std::env;
 use std::path::{Path, PathBuf};
 
-use git2::Repository;
+use git2::{Repository, IndexAddOption};
 
 use cargo::core::Workspace;
 use cargo::ops;
@@ -53,6 +53,9 @@ fn check_repo(path: &Path) -> Result<(), git2::Error> {
         {
             println!("cuo: Deps updated");
             // TODO auto-commit updated repo
+            let mut index = repo.index()?;
+            index.add_all(Vec::<String>::new(), IndexAddOption::all(), None)?;
+            index.write()?;
         }
 
         println!("cuo: Done!\n==========");
