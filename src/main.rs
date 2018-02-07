@@ -56,10 +56,19 @@ fn check_repo(path: &Path) -> Result<(), git2::Error> {
             .any(|s| s.status() == git2::STATUS_WT_MODIFIED)
         {
             println!("cuo: Deps updated");
-            // TODO auto-commit updated repo
             let mut index = repo.index()?;
             index.add_all(Vec::<String>::new(), IndexAddOption::all(), None)?;
-            index.write()?;
+            let tree_id = index.write_tree()?;
+
+            let sig = repo.signature()?;
+            let tree = repo.find_tree(tree_id)?;
+
+            let current_head = repo.head()?.peel_to_commit()?;
+
+            // TODO better commit message describing what was updated
+            repo.commit(Some("HEAD"), &sig, &sig, "Update deps", &tree, &[&current_head])?;
+
+            // TODO push commit to remote origin
         }
 
         println!("cuo: Done!\n==========");
