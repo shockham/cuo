@@ -6,7 +6,7 @@ use std::fs;
 use std::env;
 use std::path::{Path, PathBuf};
 
-use git2::{Repository, IndexAddOption, PushOptions};
+use git2::{Repository, IndexAddOption, PushOptions, RemoteCallbacks, Cred};
 
 use cargo::core::Workspace;
 use cargo::ops;
@@ -65,9 +65,14 @@ fn check_repo(path: &Path) -> Result<(), git2::Error> {
 
             let current_head = repo.head()?.peel_to_commit()?;
 
+            let mut cbs = RemoteCallbacks::new();
+            let _ = cbs.credentials(|_,_,_| Cred::default());
+            let mut push_ops = PushOptions::default();
+            let push_ops = push_ops.remote_callbacks(cbs);
+
             // TODO better commit message describing what was updated
             repo.commit(Some("HEAD"), &sig, &sig, "Update deps", &tree, &[&current_head])?;
-            repo.find_remote("origin")?.push(&[], Some(&mut PushOptions::default()))?;
+            repo.find_remote("origin")?.push(&[], Some(push_ops))?;
         }
 
         println!("cuo: Done!\n==========");
