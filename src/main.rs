@@ -29,7 +29,11 @@ fn run() -> io::Result<()> {
 
             toml_path.exists() && main_path.exists()
         })
-        .for_each(|path| check_repo(&path).unwrap());
+        .for_each(|path| {
+            if let Err(e) = check_repo(&path) {
+                println!("cuo: {}\n==========", e) ;
+            }
+        });
 
     Ok(())
 }
