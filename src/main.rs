@@ -108,10 +108,11 @@ fn check_repo(path: &Path) -> Result<(), git2::Error> {
             let mut index_add_ops = IndexAddOption::empty();
             index_add_ops.insert(git2::ADD_DEFAULT);
             index_add_ops.insert(git2::ADD_CHECK_PATHSPEC);
+            index.add_all(Vec::<String>::new(), index_add_ops, None)?;
 
-            index.add_all(vec![".".to_string()], index_add_ops, None)?;
             let tree_id = index.write_tree()?;
             let tree = repo.find_tree(tree_id)?;
+            index.write()?;
 
             // TODO better commit message describing what was updated
             repo.commit(
