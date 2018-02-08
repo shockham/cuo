@@ -38,6 +38,51 @@ fn run() -> io::Result<()> {
     Ok(())
 }
 
+fn credentials_callback(
+    url: &str,
+    username: Option<&str>,
+    allowed: git2::CredentialType,
+    cfg: &git2::Config,
+) -> Result<Cred, git2::Error> {
+    if allowed.contains(git2::USERNAME) {
+        return Err(git2::Error::from_str("Try usernames later"))
+    }
+
+
+    if allowed.contains(git2::SSH_KEY) {
+        let mut cred_helper = git2::CredentialHelper::new(url);
+        cred_helper.config(&cfg);
+
+        let name = username
+            .map(|s| s.to_string())
+            .or_else(|| cred_helper.username.clone())
+            .or_else(|| std::env::var("USER").ok())
+            .or_else(|| std::env::var("USERNAME").ok())
+            .or_else(|| Some("git".to_string()))
+            .unwrap();
+
+        let result = Cred::ssh_key_from_agent(&name);
+
+        if result.is_ok() {
+            return result
+        }
+    }
+
+    if allowed.contains(git2::USER_PASS_PLAINTEXT) {
+        if let Ok(token) = std::env::var("GH_TOKEN") {
+            return Cred::userpass_plaintext(&token, "")
+        } else if let Ok(cred_helper) = Cred::credential_helper(&cfg, url, username) {
+            return Ok(cred_helper)
+        }
+    }
+
+    if allowed.contains(git2::DEFAULT) {
+        return Cred::default()
+    }
+
+    Err(git2::Error::from_str("cuo: no authentication available"))
+}
+
 fn check_repo(path: &Path) -> Result<(), git2::Error> {
     let repo = Repository::open(path)?;
 
@@ -65,8 +110,10 @@ fn check_repo(path: &Path) -> Result<(), git2::Error> {
 
             let current_head = repo.head()?.peel_to_commit()?;
 
+
+            let cfg = repo.config()?;
             let mut rcbs = RemoteCallbacks::new();
-            rcbs.credentials(|_, _, _| Cred::default());
+            rcbs.credentials(|u,un,a| credentials_callback(u, un, a, &cfg));
             let mut push_ops = PushOptions::default();
             push_ops.remote_callbacks(rcbs);
 
