@@ -110,13 +110,6 @@ fn check_repo(path: &Path) -> Result<(), git2::Error> {
 
             let current_head = repo.head()?.peel_to_commit()?;
 
-
-            let cfg = repo.config()?;
-            let mut rcbs = RemoteCallbacks::new();
-            rcbs.credentials(|u,un,a| credentials_callback(u, un, a, &cfg));
-            let mut push_ops = PushOptions::default();
-            push_ops.remote_callbacks(rcbs);
-
             // TODO better commit message describing what was updated
             repo.commit(
                 Some("HEAD"),
@@ -126,6 +119,13 @@ fn check_repo(path: &Path) -> Result<(), git2::Error> {
                 &tree,
                 &[&current_head],
             )?;
+
+            let cfg = repo.config()?;
+            let mut rcbs = RemoteCallbacks::new();
+            rcbs.credentials(|u,un,a| credentials_callback(u, un, a, &cfg));
+            let mut push_ops = PushOptions::default();
+            push_ops.remote_callbacks(rcbs);
+
             repo.find_remote("origin")?.push(&[], Some(&mut push_ops))?;
         }
 
