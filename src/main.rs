@@ -1,3 +1,9 @@
+/*!
+Tool to automate updating minor dependency versions in rust bin projects.
+*/
+
+#![deny(missing_docs)]
+
 extern crate cargo;
 extern crate git2;
 
