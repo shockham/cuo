@@ -66,7 +66,10 @@ fn credentials_callback(
             .or_else(|| Some("git".to_string()))
             .unwrap();
 
-        let result = Cred::ssh_key_from_agent(&name);
+        // TODO better handling of ssh key than just grabbing default, prob using ssh-agent
+        let mut pk_path = std::env::home_dir().unwrap();
+        pk_path.push(".ssh/id_rsa");
+        let result = Cred::ssh_key(&name, None, &pk_path, None);
 
         if result.is_ok() {
             return result;
@@ -135,7 +138,8 @@ fn check_repo(path: &Path) -> Result<(), git2::Error> {
             let mut push_ops = PushOptions::default();
             push_ops.remote_callbacks(rcbs);
 
-            repo.find_remote("origin")?.push(&[], Some(&mut push_ops))?;
+            // TODO don't just push master refspec
+            repo.find_remote("origin")?.push(&["refs/heads/master"], Some(&mut push_ops))?;
         }
 
         println!("cuo: Done!\n==========");
