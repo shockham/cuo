@@ -145,7 +145,7 @@ fn check_repo(path: &Path) -> Result<(), git2::Error> {
     Ok(())
 }
 
-pub fn cargo_update(path: &Path) -> CliResult {
+fn cargo_update(path: &Path) -> CliResult {
     let config = Config::default()?;
     let root = find_root_manifest_for_wd(None, path)?;
 
