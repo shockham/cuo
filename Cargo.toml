@@ -5,4 +5,4 @@ authors = ["shockham <samuel.hockham@gmail.com>"]
 
 [dependencies]
 git2 = "0.6"
-cargo = "0.24"
+cargo = "0.26"
