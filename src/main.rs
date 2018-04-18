@@ -7,17 +7,17 @@ Tool to automate updating minor dependency versions in rust bin projects.
 extern crate cargo;
 extern crate git2;
 
-use std::io;
-use std::fs;
 use std::env;
+use std::fs;
+use std::io;
 use std::path::{Path, PathBuf};
 
 use git2::{Cred, IndexAddOption, PushOptions, RemoteCallbacks, Repository};
 
 use cargo::core::Workspace;
 use cargo::ops;
-use cargo::util::{CliResult, Config};
 use cargo::util::important_paths::find_root_manifest_for_wd;
+use cargo::util::{CliResult, Config};
 
 fn run() -> io::Result<()> {
     let cwd = env::current_dir()?;
@@ -139,7 +139,8 @@ fn check_repo(path: &Path) -> Result<(), git2::Error> {
             push_ops.remote_callbacks(rcbs);
 
             // TODO don't just push master refspec
-            repo.find_remote("origin")?.push(&["refs/heads/master"], Some(&mut push_ops))?;
+            repo.find_remote("origin")?
+                .push(&["refs/heads/master"], Some(&mut push_ops))?;
         }
 
         println!("cuo: Done!\n==========");
