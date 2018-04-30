@@ -19,8 +19,7 @@ use cargo::ops;
 use cargo::util::important_paths::find_root_manifest_for_wd;
 use cargo::util::{CliResult, Config};
 
-
-const CLI_DIVIDER:&str = "==========";
+const CLI_DIVIDER: &str = "==========";
 
 fn run() -> io::Result<()> {
     let cwd = env::current_dir()?;
