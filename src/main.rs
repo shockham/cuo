@@ -98,7 +98,7 @@ fn check_repo(path: &Path) -> Result<(), git2::Error> {
 
     if repo.statuses(None)?
         .iter()
-        .filter(|s| s.status() == git2::STATUS_IGNORED)
+        .filter(|s| s.status() != git2::STATUS_IGNORED)
         .count() != 0
     {
         return Err(git2::Error::from_str("Repo not clean"));
