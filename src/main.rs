@@ -19,6 +19,9 @@ use cargo::ops;
 use cargo::util::important_paths::find_root_manifest_for_wd;
 use cargo::util::{CliResult, Config};
 
+
+const CLI_DIVIDER:&str = "==========";
+
 fn run() -> io::Result<()> {
     let cwd = env::current_dir()?;
 
@@ -36,8 +39,9 @@ fn run() -> io::Result<()> {
             toml_path.exists() && main_path.exists()
         })
         .for_each(|path| {
+            println!("{}", CLI_DIVIDER);
             if let Err(e) = check_repo(&path) {
-                println!("cuo: {}\n==========", e);
+                println!("cuo: {}\n{}", e, CLI_DIVIDER);
             }
         });
 
@@ -94,7 +98,7 @@ fn credentials_callback(
 fn check_repo(path: &Path) -> Result<(), git2::Error> {
     let repo = Repository::open(path)?;
 
-    println!("==========\ncuo: Checking: {:?}", repo.path());
+    println!("cuo: Checking: {:?}", repo.path());
 
     if repo.statuses(None)?
         .iter()
@@ -147,7 +151,7 @@ fn check_repo(path: &Path) -> Result<(), git2::Error> {
                 .push(&["refs/heads/master"], Some(&mut push_ops))?;
         }
 
-        println!("cuo: Done!\n==========");
+        println!("cuo: Done!\n{}", CLI_DIVIDER);
     }
 
     Ok(())
