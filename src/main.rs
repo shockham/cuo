@@ -19,11 +19,12 @@ use cargo::ops;
 use cargo::util::important_paths::find_root_manifest_for_wd;
 use cargo::util::{CliResult, Config};
 
-const CLI_DIVIDER: &str = "==========";
+const CLI_DIVIDER: &str = "--------------------";
 
 fn run() -> io::Result<()> {
     let cwd = env::current_dir()?;
 
+    println!("{}", CLI_DIVIDER);
     fs::read_dir(cwd)?
         .filter_map(|e| e.ok())
         .filter(|e| e.path().is_dir())
@@ -38,7 +39,6 @@ fn run() -> io::Result<()> {
             toml_path.exists() && main_path.exists()
         })
         .for_each(|path| {
-            println!("{}", CLI_DIVIDER);
             if let Err(e) = check_repo(&path) {
                 println!("cuo: {}\n{}", e, CLI_DIVIDER);
             }
