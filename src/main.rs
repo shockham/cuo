@@ -21,7 +21,7 @@ use cargo::util::{CliResult, Config};
 
 const CLI_DIVIDER: &str = "--------------------";
 
-fn run() -> io::Result<()> {
+fn main() -> io::Result<()> {
     let cwd = env::current_dir()?;
 
     println!("{}", CLI_DIVIDER);
@@ -170,8 +170,4 @@ fn cargo_update(path: &Path) -> CliResult {
     let ws = Workspace::new(&root, &config)?;
     ops::update_lockfile(&ws, &update_opts)?;
     Ok(())
-}
-
-fn main() {
-    let _ = run();
 }
