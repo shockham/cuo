@@ -53,11 +53,11 @@ fn credentials_callback(
     allowed: git2::CredentialType,
     cfg: &git2::Config,
 ) -> Result<Cred, git2::Error> {
-    if allowed.contains(git2::USERNAME) {
+    if allowed.contains(git2::CredentialType::USERNAME) {
         return Err(git2::Error::from_str("Try usernames later"));
     }
 
-    if allowed.contains(git2::SSH_KEY) {
+    if allowed.contains(git2::CredentialType::SSH_KEY) {
         let mut cred_helper = git2::CredentialHelper::new(url);
         cred_helper.config(&cfg);
 
@@ -79,7 +79,7 @@ fn credentials_callback(
         }
     }
 
-    if allowed.contains(git2::USER_PASS_PLAINTEXT) {
+    if allowed.contains(git2::CredentialType::USER_PASS_PLAINTEXT) {
         if let Ok(token) = std::env::var("GH_TOKEN") {
             return Cred::userpass_plaintext(&token, "");
         } else if let Ok(cred_helper) = Cred::credential_helper(&cfg, url, username) {
@@ -87,7 +87,7 @@ fn credentials_callback(
         }
     }
 
-    if allowed.contains(git2::DEFAULT) {
+    if allowed.contains(git2::CredentialType::DEFAULT) {
         return Cred::default();
     }
 
@@ -101,7 +101,7 @@ fn check_repo(path: &Path) -> Result<(), git2::Error> {
 
     if repo.statuses(None)?
         .iter()
-        .filter(|s| s.status() != git2::STATUS_IGNORED)
+        .filter(|s| s.status() != git2::Status::IGNORED)
         .count() != 0
     {
         return Err(git2::Error::from_str("Repo not clean"));
@@ -113,7 +113,7 @@ fn check_repo(path: &Path) -> Result<(), git2::Error> {
 
         if repo.statuses(None)?
             .iter()
-            .any(|s| s.status() == git2::STATUS_WT_MODIFIED)
+            .any(|s| s.status() == git2::Status::WT_MODIFIED)
         {
             println!("cuo: Deps updated");
             let mut index = repo.index()?;
@@ -121,8 +121,8 @@ fn check_repo(path: &Path) -> Result<(), git2::Error> {
             let sig = repo.signature()?;
 
             let mut index_add_ops = IndexAddOption::empty();
-            index_add_ops.insert(git2::ADD_DEFAULT);
-            index_add_ops.insert(git2::ADD_CHECK_PATHSPEC);
+            index_add_ops.insert(git2::IndexAddOption::DEFAULT);
+            index_add_ops.insert(git2::IndexAddOption::CHECK_PATHSPEC);
             index.add_all(Vec::<String>::new(), index_add_ops, None)?;
 
             let tree_id = index.write_tree()?;
@@ -158,12 +158,12 @@ fn check_repo(path: &Path) -> Result<(), git2::Error> {
 
 fn cargo_update(path: &Path) -> CliResult {
     let config = Config::default()?;
-    let root = find_root_manifest_for_wd(None, path)?;
+    let root = find_root_manifest_for_wd(path)?;
 
     let update_opts = ops::UpdateOptions {
         aggressive: false,
         precise: None,
-        to_update: &Vec::new(),
+        to_update: Vec::new(),
         config: &config,
     };
 
