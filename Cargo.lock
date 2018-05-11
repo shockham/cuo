@@ -193,7 +193,7 @@ dependencies = [
 
 [[package]]
 name = "cuo"
-version = "0.2.0"
+version = "0.3.0"
 dependencies = [
  "cargo 0.27.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "git2 0.7.1 (registry+https://github.com/rust-lang/crates.io-index)",
