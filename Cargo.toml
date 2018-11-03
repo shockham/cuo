@@ -11,4 +11,4 @@ description = "Automated updating and git commiting of cargo project dependencie
 
 [dependencies]
 git2 = "0.7"
-cargo = "0.30"
+cargo = "0.31"
