@@ -10,5 +10,5 @@ documentation = "https://docs.rs/cuo"
 description = "Automated updating and git commiting of cargo project dependencies"
 
 [dependencies]
-git2 = "0.7"
+git2 = "0.8"
 cargo = "0.32"
