@@ -165,6 +165,7 @@ fn cargo_update(path: &Path) -> CliResult {
         precise: None,
         to_update: Vec::new(),
         config: &config,
+        dry_run: false,
     };
 
     let ws = Workspace::new(&root, &config)?;
