@@ -6,6 +6,7 @@ Tool to automate updating minor dependency versions in rust bin projects.
 
 extern crate cargo;
 extern crate git2;
+extern crate dirs;
 
 use std::env;
 use std::fs;
@@ -70,7 +71,7 @@ fn credentials_callback(
             .unwrap();
 
         // TODO better handling of ssh key than just grabbing default, prob using ssh-agent
-        let mut pk_path = std::env::home_dir().unwrap();
+        let mut pk_path = dirs::home_dir().unwrap();
         pk_path.push(".ssh/id_rsa");
         let result = Cred::ssh_key(&name, None, &pk_path, None);
 
